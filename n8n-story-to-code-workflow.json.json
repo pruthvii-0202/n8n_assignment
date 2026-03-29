@@ -1,0 +1,277 @@
+{
+  "name": "JIRA STORY TO CODE",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        16
+      ],
+      "id": "a2a7720f-7114-4e65-893c-ceb2212933bf",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        400,
+        16
+      ],
+      "id": "3f800cd0-659f-4055-b3d9-f4719c998983",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1I2pP2Sm6RfejEx8d_1OpfFOQa3-QLiuW",
+          "mode": "list",
+          "cachedResultName": "JIRA_Stories_Calculator.xlsx",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1I2pP2Sm6RfejEx8d_1OpfFOQa3-QLiuW/edit?usp=drivesdk&ouid=115157870621950100619&rtpof=true&sd=true"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        176,
+        16
+      ],
+      "id": "ccffbdc0-71bb-41d3-8482-3d205caf4001",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "jfYkqj36j7oKSE3V",
+          "name": "Google Drive OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-5-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-5-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "=You are a senior prompt engineer and software developer.\n\nYour task is to convert the following Jira story into a coding prompt.\n\nJira Input:\nTitle: {{$json[\"Task title\"]}}\nUser Story: {{$json[\"User story\"]}}\nAcceptance Criteria: {{$json[\"Acceptance criteria\"]}}\nTechnical Constraints: {{$json[\"Technical constraints\"]}}\n\n---\n\nGenerate a clear and structured prompt for code generation.\n\nOutput format:\n\nYou are a developer.\n\nFollow a step by step coding practice one step at a time.\n\nBuild the following feature:\n\nFeature:\n<short summary from title>\n\nDetails:\n<converted user story>\n\nRequirements:\n<acceptance criteria as bullet points>\n\nConstraints:\n<technical constraints>\n\nInstructions:\n- Write clean, production-ready code\n- Include comments\n- Follow best practices"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        624,
+        16
+      ],
+      "id": "345dc8f0-5514-42c4-a47f-7bc3b925f433",
+      "name": "Story_To_Prompt",
+      "credentials": {
+        "openAiApi": {
+          "id": "4buGwqYyLpD6u6j1",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  item.json.myNewField = 1;\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1328,
+        16
+      ],
+      "id": "dcadd2f6-ef7f-4c46-93c1-7f4f456b0cea",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-5-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-5-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "=You are a senior software developer.\n\nYou will be given a feature description.\n\nYour task is to convert it into working code.\n\nFollow these rules:\n- Think step by step before coding\n- Write clean and production-ready code\n- Add comments for clarity\n- Handle edge cases\n- Follow best practices\n\nOutput format:\n- Only return code\n- No explanations\n\nUse JavaScript (Node.js) unless specified otherwise.\n\nFeature Description:\n{{$json[\"output\"][0][\"content\"][0][\"text\"]}}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        976,
+        16
+      ],
+      "id": "afbbfb2e-1f1a-4ddc-947c-fcc102d80349",
+      "name": "Prompt To Code",
+      "credentials": {
+        "openAiApi": {
+          "id": "4buGwqYyLpD6u6j1",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1552,
+        16
+      ],
+      "id": "9aa1f8f1-5fa0-41f4-b728-e8a63d4a0b72",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "name": "Data_code",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "17tBmLEgJa6YXwCtqawmBURg0WDS7CkbZ",
+          "mode": "list",
+          "cachedResultName": "ASSINGMENTS",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/17tBmLEgJa6YXwCtqawmBURg0WDS7CkbZ"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1760,
+        16
+      ],
+      "id": "19ef7e42-20ac-47ed-aaab-14095e83d50a",
+      "name": "Upload file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "jfYkqj36j7oKSE3V",
+          "name": "Google Drive OAuth2 API"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Story_To_Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Story_To_Prompt": {
+      "main": [
+        [
+          {
+            "node": "Prompt To Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prompt To Code": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "758b6e54-47fc-4a3a-a9d1-b2b51d7895a0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7cac1442f0db5a0868157e7d22ad246d30256e45e2790f90081b419d30e2cc66"
+  },
+  "id": "2dU4aw4mpNpyotxS",
+  "tags": []
+}
